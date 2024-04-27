@@ -1,4 +1,5 @@
 import sqlite3
+from bs4 import BeautifulSoup
 
 class SQLiteManager:
     def __init__(self, db_path):
@@ -6,21 +7,15 @@ class SQLiteManager:
         self.conn = None
 
     def connect(self):
-        """Connect to the SQLite database."""
-        try:
-            self.conn = sqlite3.connect(self.db_path)
-            print(f"Connected to {self.db_path} successfully.")
-        except sqlite3.Error as e:
-            print(f"Error connecting to database: {e}")
+        self.conn = sqlite3.connect(self.db_path)
+        print(f"Connected to {self.db_path} successfully.")
 
     def disconnect(self):
-        """Disconnect from the SQLite database."""
         if self.conn:
             self.conn.close()
             print("Database connection closed.")
 
     def execute_query(self, query, params=None):
-        """Execute a SQL query with optional parameters."""
         try:
             cursor = self.conn.cursor()
             if params:
@@ -29,29 +24,24 @@ class SQLiteManager:
                 cursor.execute(query)
             if query.strip().upper().startswith("SELECT"):
                 return cursor.fetchall()
-            else:
-                self.conn.commit()
+            self.conn.commit()
             print("Query executed successfully.")
         except sqlite3.Error as e:
             print(f"Error executing query: {e}")
-            return None
 
-    def query_builder(self, query_type, table_name, fields=None, values=None):
-        """Build SQL queries dynamically."""
+    def query_builder(self, query_type, table_name, fields=None):
         query = ""
         if query_type.upper() == "CREATE":
-            query = f"CREATE TABLE {table_name} ({', '.join(fields)})"
+            field_defs = [f"{field.replace('#', '').strip()} TEXT" for field in fields]
+            query = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(field_defs)})"
         elif query_type.upper() == "INSERT":
-            placeholders = ', '.join(['?' for _ in values])
-            query = f"INSERT INTO {table_name} ({', '.join(fields)}) VALUES ({placeholders})"
+            sanitized_fields = [field.replace('#', '').strip() for field in fields]
+            placeholders = ', '.join(['?' for _ in sanitized_fields])
+            query = f"INSERT INTO {table_name} ({', '.join(sanitized_fields)}) VALUES ({placeholders})"
         elif query_type.upper() == "SELECT":
             query = f"SELECT * FROM {table_name}"
-        elif query_type.upper() == "UPDATE":
-            set_clause = ', '.join([f"{field} = ?" for field in fields])
-            query = f"UPDATE {table_name} SET {set_clause} WHERE {values[0]} = {values[1]}"
-        elif query_type.upper() == "DELETE":
-            query = f"DELETE FROM {table_name} WHERE {fields[0]} = ?"
         return query
+
 
     def __enter__(self):
         self.connect()
@@ -60,13 +50,29 @@ class SQLiteManager:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.disconnect()
 
-# Example usage
+def parse_html(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        soup = BeautifulSoup(file, 'html.parser')
+    data = []
+    table_bodies = soup.find_all('tbody')
+    headers = [th.get_text().replace('#', '').strip() for th in table_bodies[2].find_all('td')]
+    for tbody in table_bodies[3:]:
+        for row in tbody.find_all('tr'):
+            cols = row.find_all('td')
+            data.append([col.text for col in cols])
+    return headers, data
+
+
 db_path = 'example.db'
+html_path = 'Co2.html'
+
 with SQLiteManager(db_path) as manager:
-    create_query = manager.query_builder("CREATE", "Users", ["id INTEGER PRIMARY KEY", "name TEXT"])
+    headers, data = parse_html(html_path)
+    create_query = manager.query_builder("CREATE", "Co2Data", headers)
     manager.execute_query(create_query)
-    insert_query = manager.query_builder("INSERT", "Users", ["id", "name"], [1, "John Doe"])
-    manager.execute_query(insert_query, (1, "John Doe"))
-    select_query = manager.query_builder("SELECT", "Users")
+    for row in data:
+        insert_query = manager.query_builder("INSERT", "Co2Data", headers)
+        manager.execute_query(insert_query, tuple(row))
+    select_query = manager.query_builder("SELECT", "Co2Data")
     results = manager.execute_query(select_query)
     print(results)
