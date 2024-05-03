@@ -30,18 +30,13 @@ class SQLiteManager:
             print(f"Error executing query: {e}")
 
     def query_builder(self, query_type, table_name, fields=None):
-        query = ""
-        if query_type.upper() == "CREATE":
-            field_defs = [f"{field.replace('#', '').strip()} TEXT" for field in fields]
-            query = f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(field_defs)})"
-        elif query_type.upper() == "INSERT":
-            sanitized_fields = [field.replace('#', '').strip() for field in fields]
-            placeholders = ', '.join(['?' for _ in sanitized_fields])
-            query = f"INSERT INTO {table_name} ({', '.join(sanitized_fields)}) VALUES ({placeholders})"
-        elif query_type.upper() == "SELECT":
-            query = f"SELECT * FROM {table_name}"
-        return query
-
+        queries = {
+            "CREATE": lambda fields: f"CREATE TABLE IF NOT EXISTS {table_name} ({', '.join(f'{field} TEXT' for field in fields)})",
+            "INSERT": lambda fields: f"INSERT INTO {table_name} ({', '.join(fields)}) VALUES ({', '.join(['?' for _ in fields])})",
+            "SELECT": lambda fields: f"SELECT * FROM {table_name}"
+        }
+        # Call the function from the dictionary with fields if needed
+        return queries[query_type.upper()](fields if fields else [])
 
     def __enter__(self):
         self.connect()
@@ -61,7 +56,6 @@ def parse_html(file_path):
             cols = row.find_all('td')
             data.append([col.text for col in cols])
     return headers, data
-
 
 db_path = 'example.db'
 html_path = 'Co2.html'
