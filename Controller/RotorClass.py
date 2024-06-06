@@ -63,8 +63,7 @@ class Rotor:
         elif op == 0b110:
             return self.increment_rotation_counter()
         elif op == 0b111:
-            # TBD functionality
-            pass
+            return "Operation 111 executed"
         else:
             raise ValueError(f"Invalid operation code: {bin(op)}")
 
