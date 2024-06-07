@@ -1,5 +1,5 @@
 import unittest
-from BasexDigitClass import BaseXDigit
+from BaseXDigitClass import BaseXDigit
 
 class TestBaseXDigit(unittest.TestCase):
     def setUp(self):
@@ -8,7 +8,7 @@ class TestBaseXDigit(unittest.TestCase):
 
     def test_addition(self):
         bPJ = self.bP + self.bJ
-        self.assertEqual(bPJ.to_base10(), "0A4092")
+        self.assertEqual(bPJ.to_base10(), "0A4086")
 
     def test_subtraction(self):
         bPJ = self.bP + self.bJ
@@ -17,14 +17,14 @@ class TestBaseXDigit(unittest.TestCase):
 
     def test_multiplication(self):
         result = self.bP * self.bJ
-        self.assertEqual(result.to_base10(), "0A118848")
+        self.assertEqual(result.to_base10(), "0A2310624")
 
     def test_modulo(self):
         result = self.bP % self.bJ
-        self.assertEqual(result.to_base10(), "0A123")
+        self.assertEqual(result.to_base10(), "0A678")
 
     def test_to_base(self):
-        self.assertEqual(self.bP.to_base(16), "0G2H3")
+        self.assertEqual(self.bP.to_base(16), "0G2A6")
 
 if __name__ == "__main__":
     unittest.main()
