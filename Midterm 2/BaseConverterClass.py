@@ -45,8 +45,3 @@ class BaseConverter:
     def prepend_base_prefix(self, number, base):
         base_char = self.value_to_char(base)
         return f"0{base_char}{number}"
-
-    def convert(self, input_number, target_base):
-        from_base, number_body = self.detect_base(input_number)
-        converted_number = self.convert_base(number_body, from_base, target_base)
-        return self.prepend_base_prefix(converted_number, target_base)
