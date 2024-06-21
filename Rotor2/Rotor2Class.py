@@ -24,8 +24,6 @@ class Rotor2:
     def decrypt_char(self, char):
         ascii_val = ord(char) - 32  # Normalize to 0-95 range
         decrypted_val = (ascii_val - self.rotor1_position - self.rotor2_position) % self.rotor1_size
-        if decrypted_val < 0:
-            decrypted_val += self.rotor1_size
         self.rotate_rotor1()
         return chr(decrypted_val + 32)  # Convert back to ASCII range
 

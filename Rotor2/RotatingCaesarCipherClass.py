@@ -13,7 +13,6 @@ def brute_force_decryption(encrypted_message):
                 return r1_start, r2_start, decrypted_message
     return None
 
-
 class TestRotor2(unittest.TestCase):
     def test_brute_force_decryption(self):
         with open('E2Rotor.txt', 'r') as file:
