@@ -1,41 +1,38 @@
-class Rotor2:
-    def __init__(self, rotor1_start, rotor2_start):
-        self.start_rotor1_position = rotor1_start
-        self.start_rotor2_position = rotor2_start
-        self.rotor1_position = rotor1_start
-        self.rotor2_position = rotor2_start
-        self.rotor1_size = 96  # ASCII range 32-127
-        self.rotor2_size = 96
+class Rotor:
+    def __init__(self, initial_position):
+        self.position = initial_position
+    
+    def rotate(self):
+        self.position = (self.position + 1) % 96  # Assuming 96 characters in the ASCII table used
 
-    def rotate_rotor1(self):
-        self.rotor1_position = (self.rotor1_position + 1) % self.rotor1_size
-        if self.rotor1_position == 0:
-            self.rotate_rotor2()
+def decrypt_character(encrypted_char, rotor1, rotor2):
+    encrypted_index = ord(encrypted_char) - 32
+    decrypted_index = (encrypted_index - rotor1.position - rotor2.position) % 96
+    decrypted_char = chr(decrypted_index + 32)
+    return decrypted_char
 
-    def rotate_rotor2(self):
-        self.rotor2_position = (self.rotor2_position + 1) % self.rotor2_size
+def find_initial_settings(encrypted_text):
+    for initial_position1 in range(96):
+        for initial_position2 in range(96):
+            rotor1 = Rotor(initial_position1)
+            rotor2 = Rotor(initial_position2)
+            decrypted_text = ""
+            for char in encrypted_text:
+                decrypted_char = decrypt_character(char, rotor1, rotor2)
+                decrypted_text += decrypted_char
+                rotor1.rotate()
+                if rotor1.position == 0:
+                    rotor2.rotate()
+            if " the " in decrypted_text or " and " in decrypted_text:
+                print(f"Possible decryption with Rotor1: {initial_position1} and Rotor2: {initial_position2}")
+                print(decrypted_text[:100])  # Print the first 100 characters for debugging
+                return decrypted_text
+    return None
 
-    def encrypt_char(self, char):
-        ascii_val = ord(char) - 32  # Normalize to 0-95 range
-        encrypted_val = (ascii_val + self.rotor1_position + self.rotor2_position) % self.rotor1_size
-        self.rotate_rotor1()
-        return chr(encrypted_val + 32)  # Convert back to ASCII range
+def read_encrypted_file(file_path):
+    with open(file_path, 'r') as file:
+        return file.read()
 
-    def decrypt_char(self, char):
-        ascii_val = ord(char) - 32  # Normalize to 0-95 range
-        decrypted_val = (ascii_val - self.rotor1_position - self.rotor2_position) % self.rotor1_size
-        self.rotate_rotor1()
-        return chr(decrypted_val + 32)  # Convert back to ASCII range
-
-    def encrypt_message(self, message):
-        self.rotor1_position = self.start_rotor1_position
-        self.rotor2_position = self.start_rotor2_position
-        return ''.join([self.encrypt_char(c) for c in message])
-
-    def decrypt_message(self, message):
-        self.rotor1_position = self.start_rotor1_position
-        self.rotor2_position = self.start_rotor2_position
-        decrypted_message = []
-        for char in message:
-            decrypted_message.append(self.decrypt_char(char))
-        return ''.join(decrypted_message)
+if __name__ == '__main__':
+    encrypted_text = read_encrypted_file('/mnt/data/E2Rotor.txt')
+    find_initial_settings(encrypted_text)
