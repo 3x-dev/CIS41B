@@ -1,60 +1,31 @@
-from Rotor2Class import Rotor
+import unittest
+from Rotor2Class import Rotor2
 
-class RotatingCaesarCipher:
-    def __init__(self, shift):
-        self.shift = shift
+def brute_force_decryption(encrypted_message):
+    common_words = [" THE ", " AND ", " IS ", " OF ", " TO ", " A ", " IN ", " THAT ", " IT "]
+    for r1_start in range(96):
+        for r2_start in range(96):
+            rotor = Rotor2(rotor1_start=r1_start, rotor2_start=r2_start)
+            decrypted_message = rotor.decrypt_message(encrypted_message)
+            if any(word in decrypted_message for word in common_words):
+                return r1_start, r2_start, decrypted_message
+    return None
 
-    def encrypt(self, text):
-        result = []
 
-        for char in text:
-            rotor = Rotor(initial_char=char)
-            for i in range(self.shift):
-                rotor.increment()
+class TestRotor2(unittest.TestCase):
+    def test_brute_force_decryption(self):
+        with open('E2Rotor.txt', 'r') as file:
+            encrypted_message = file.read()
 
-            result.append (rotor.get_current_char())
-            #print("number of rotations: " + str(rotor.counter()))
-            rotor.reset()
+        result = brute_force_decryption(encrypted_message)
+        
+        if result:
+            r1_start, r2_start, decrypted_message = result
+            print(f"Rotor1 Start: {r1_start}, Rotor2 Start: {r2_start}")
+            print(f"Decrypted Message: {decrypted_message}")
+            self.assertTrue(any(word in decrypted_message for word in [" THE ", " AND ", " IS ", " OF ", " TO ", " A ", " IN ", " THAT ", " IT "]))
+        else:
+            self.fail("Initial positions not found.")
 
-        return ''.join(result)
-    
-    def decrypt(self, text):
-        result = []
-
-        for char in text:
-            rotor = Rotor(initial_char=char)
-            for i in range(self.shift):
-                rotor.decrement()
-
-            result.append (rotor.get_current_char())
-            #print("number of rotations: " + str(rotor.counter()))
-            rotor.reset()
-
-        return ''.join(result)
-
-    def __call__(self, text, encrypt=True):
-        return self.rotate(text, encrypt)
-    
-    def __len__(self):
-        return self.shift
-
-    def __str__(self):
-        return f"RotatingCaesarCipher(shift={self.shift})"
-    
-    def __repr__(self):
-        return f"{self.__class__.__name__}(shift={self.shift})"
-    
-    def __bool__(self):
-        return self.shift != 0
-
-def main():
-    cipher = RotatingCaesarCipher(98)
-    original = "HELLO"
-    encrypted = cipher.encrypt(original)
-    print(f"Original: {original}")
-    print(f"Encrypted: {encrypted}")
-    decrypted = cipher.decrypt(encrypted)
-    print(f"Decrypted: {decrypted}")
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    unittest.main()
