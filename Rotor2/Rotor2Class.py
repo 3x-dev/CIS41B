@@ -1,5 +1,7 @@
 class Rotor2:
     def __init__(self, rotor1_start, rotor2_start):
+        self.start_rotor1_position = rotor1_start
+        self.start_rotor2_position = rotor2_start
         self.rotor1_position = rotor1_start
         self.rotor2_position = rotor2_start
         self.rotor1_size = 96  # ASCII range 32-127
@@ -28,6 +30,8 @@ class Rotor2:
         return chr(decrypted_val + 32)  # Convert back to ASCII range
 
     def encrypt_message(self, message):
+        self.rotor1_position = self.start_rotor1_position
+        self.rotor2_position = self.start_rotor2_position
         return ''.join([self.encrypt_char(c) for c in message])
 
     def decrypt_message(self, message):

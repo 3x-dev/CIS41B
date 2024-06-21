@@ -7,6 +7,8 @@ def brute_force_decryption(encrypted_message):
         for r2_start in range(96):
             rotor = Rotor2(rotor1_start=r1_start, rotor2_start=r2_start)
             decrypted_message = rotor.decrypt_message(encrypted_message)
+            if r1_start % 10 == 0 and r2_start % 10 == 0:
+                print(f"Rotor1: {r1_start}, Rotor2: {r2_start}, Decrypted: {decrypted_message[:50]}")
             if any(word in decrypted_message for word in common_words):
                 return r1_start, r2_start, decrypted_message
     return None
