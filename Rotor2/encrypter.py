@@ -102,22 +102,22 @@ def test1():
 
 
 def test2():
-    top_ten_words = {"the", "be", "to", "of", "and", "a", "in", "that", "have", "I"}
+    top_ten_words = {"English"}
     
     # Read the original text from E2Rotor.txt
-    with open('E2Rotor.txt', 'r') as file:
+    with open('test.txt', 'r') as file:
         encrypted_text = file.read()
         print(f"Original text: {encrypted_text}")
 
     # Iterate over possible initial positions for rotors
-    for i in range(0x20, 0x80):
-        for j in range(0x20, 0x80):
+    for i in range(0, 96):
+        for j in range(0, 96):
             rotor1_initial = i  # Example initial position for Rotor1
             rotor2_initial = j  # Example initial position for Rotor2
             
             decrypted_text = decrypt_text(encrypted_text, rotor1_initial, rotor2_initial)
             
-            if decrypted_text.startswith("Alan") and any(word in decrypted_text for word in top_ten_words):
+            if decrypted_text.startswith("Alan") or any(word in decrypted_text for word in top_ten_words):
                 print(f"Decrypted text with rotor1_initial={rotor1_initial} and rotor2_initial={rotor2_initial}: {decrypted_text}")
 
 # Run the test2 function
