@@ -4,19 +4,19 @@ class Rotor:
         self.initial_position = initial_position
     
     def rotate(self):
-        self.position = (self.position + 1) % 96
+        self.position = (self.position + 1) % 95
 
 def encrypt_character(original_char, rotor1, rotor2, position_index):
     # Calculate hopping value
     x = rotor1.initial_position
     y = rotor2.position
     p = position_index + 1
-    h = ((x + p - 1) + ((p - 1) // 96) + y)
+    h = ((x + p - 1) + ((p - 1) // 95) + y)
     # print(f"x: {x}, y: {y}, p: {p}, h: {h}")
 
     # Step 2
     original_index = ord(original_char) - 0x20
-    e = (original_index + h) % 96
+    e = (original_index + h) % 95
 
     # Step 3
     encrypted_index = e + 0x20
@@ -40,7 +40,7 @@ def decrypt_character(encrypted_char, rotor1, rotor2, position_index):
     x = rotor1.initial_position
     y = rotor2.position
     p = position_index + 1
-    h = ((x + p - 1) + ((p - 1) // 96) + y)
+    h = ((x + p - 1) + ((p - 1) // 95) + y)
     #print(f"x: {x}, y: {y}, p: {p}, h: {h}")
 
     # Step 2
@@ -48,7 +48,7 @@ def decrypt_character(encrypted_char, rotor1, rotor2, position_index):
     
     if(encrypted_index > 0x7F):
         print(f"encrypted_index: {encrypted_index}")
-    d = (encrypted_index - h) % 96
+    d = (encrypted_index - h) % 95
     # print(f"d: {d}")
 
     # Step 3
@@ -69,15 +69,15 @@ def decrypt_text(encrypted_text, rotor1_initial, rotor2_initial):
     return decrypted_text
 
 def test1():
-    top_ten_words = {"the", "be", "to", "of", "and", "a", "in", "that", "have", "I"}
+    top_ten_words = {"THE", "be", "to", "of", "and", "a", "in", "that", "have", "I"}
 
     # Read the original text from test.txt
-    with open('test1.txt', 'r') as file:
+    with open('test.txt', 'r') as file:
         original_text = file.read().strip()
         print(f"Original text: {original_text}")
 
-    # Encrypt the text with rotor positions 49 and 50
-    encrypted_text = encrypt_text(original_text, 49, 50)
+    # Encrypt the text with test rotor positions
+    encrypted_text = encrypt_text(original_text, 0, 2)
     print(f"Encrypted text: {encrypted_text}")
 
     found_valid_decryption = False
@@ -102,7 +102,7 @@ def test1():
 
 
 def test2():
-    top_ten_words = {"English"}
+    top_ten_words = {"FEED"}
     
     # Read the original text from E2Rotor.txt
     with open('test.txt', 'r') as file:
@@ -110,15 +110,17 @@ def test2():
         print(f"Original text: {encrypted_text}")
 
     # Iterate over possible initial positions for rotors
-    for i in range(0, 96):
-        for j in range(0, 96):
+    for i in range(0x20, 0x7F):
+        for j in range(0x20, 0x7F):
+            # if ((i+j) % 95 != 2):
+            #     continue
             rotor1_initial = i  # Example initial position for Rotor1
             rotor2_initial = j  # Example initial position for Rotor2
+
             
             decrypted_text = decrypt_text(encrypted_text, rotor1_initial, rotor2_initial)
             
             if decrypted_text.startswith("Alan") or any(word in decrypted_text for word in top_ten_words):
                 print(f"Decrypted text with rotor1_initial={rotor1_initial} and rotor2_initial={rotor2_initial}: {decrypted_text}")
 
-# Run the test2 function
-test2()
+test1()
