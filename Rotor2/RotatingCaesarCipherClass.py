@@ -1,6 +1,5 @@
 import unittest
-from Rotor2Class import Rotor
-from DecryptClass import Decrypter
+from Rotor2Class import Rotor2
 
 class TestRotorDecryption(unittest.TestCase):
     def test_decryption(self):
@@ -18,27 +17,22 @@ class TestRotorDecryption(unittest.TestCase):
         for i in range(0x20, 0x80):
             for j in range(0x20, 0x80):
                 
-                rotor1_initial = i  # initial position for Rotor1
-                rotor2_initial = j  # initial position for Rotor2
-
-                rotor1 = Rotor(rotor1_initial)
-                rotor2 = Rotor(rotor2_initial)
-
-                decrypted_text = Decrypter().decrypt_text(encrypted_text, rotor1, rotor2)
+                rotor2 = Rotor2(i, j)
+                decrypted_text = rotor2.decrypt_text(encrypted_text)
                 decrypted_words = decrypted_text.split()
 
                 top_ten_word_count = sum(1 for word in decrypted_words if word in top_ten_words)
 
                 if top_ten_word_count > max_top_ten_word_count:
                     max_top_ten_word_count = top_ten_word_count
-                    best_match = (rotor1_initial, rotor2_initial, decrypted_text)
+                    best_match = (i, j, decrypted_text)
 
         # Print the best match with the most top ten words
         if best_match:
             rotor1_initial, rotor2_initial, decrypted_text = best_match
-            print(f"Best decrypted text: {decrypted_text}\n\nBest Rotor 1 initial position: {rotor1_initial}\nBest Rotor 2 initial position: {rotor2_initial}")
+            print(f"\nBest decrypted text: {decrypted_text}\n\nBest Rotor 1 initial position: {rotor1_initial}\nBest Rotor 2 initial position: {rotor2_initial}")
         else:
-            print("No decrypted text contains any of the top ten words.")
+            print("\nNo decrypted text contains any of the top ten words.")
 
 if __name__ == '__main__':
     unittest.main()
