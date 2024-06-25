@@ -10,7 +10,7 @@ class SQLiteDB:
         self.connection = sqlite3.connect(self.db_name)
 
     def create_table(self, table_name, columns):
-        # Sanitize column names to ensure they are valid SQL identifiers
+        # clean column names
         sanitized_columns = [self.sanitize_column_name(col) for col in columns if col.lower() != 'year']
         print(f"Sanitized Columns: {sanitized_columns}")
         columns_def = ', '.join([f'{col} REAL' for col in sanitized_columns])

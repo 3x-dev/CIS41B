@@ -37,10 +37,3 @@ class WebScraper:
         self.fetch_page()
         headers, data = self.parse_table()
         return headers, data
-
-if __name__ == "__main__":
-    url = 'https://gml.noaa.gov/aggi/aggi.html'
-    scraper = WebScraper(url)
-    headers, data = scraper.get_data()
-    print(headers)
-    print(data)

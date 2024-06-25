@@ -70,7 +70,7 @@ if __name__ == "__main__":
             thread = threading.Thread(target=client_worker, args=(result_queue, year, column))
             threads.append(thread)
             thread.start()
-            time.sleep(0.1)  # Slight delay to prevent server overload
+            time.sleep(0.1)  # Prevent server overload
 
     for thread in threads:
         thread.join()
@@ -79,7 +79,6 @@ if __name__ == "__main__":
     while not result_queue.empty():
         results.append(result_queue.get())
 
-    # Process results into DataFrame
     data_dict = {year: {col: None for col in columns} for year in years}
     for result in results:
         if isinstance(result, dict):
@@ -96,6 +95,6 @@ if __name__ == "__main__":
     df.index.name = 'Year'
     df.reset_index(inplace=True)
 
-    # Plotting the results
+    # Plotting results
     plot_manager = MatplotlibPlotManager(df)
     plot_manager.plot_all_regressions('Year')
