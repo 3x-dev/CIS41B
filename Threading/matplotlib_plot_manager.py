@@ -55,3 +55,23 @@ class MatplotlibPlotManager:
         self._set_plot_details(title, xlabel if xlabel else x_col, ylabel if ylabel else y_col)
         plt.legend()
         plt.show()
+
+    def plot_all_regressions(self, x_col: str):
+        for y_col in self.data.columns:
+            if y_col != x_col:
+                self.plot_regression(x_col, y_col, title=f'Linear Regression of {y_col} over {x_col}')
+
+if __name__ == "__main__":
+    # Example usage
+    data = {
+        'Year': [1979, 1980, 1981, 1982, 1983],
+        'CO2': [1.025, 1.035, 1.045, 1.055, 1.065],
+        'CH4': [0.500, 0.510, 0.520, 0.530, 0.540],
+        'N2O': [0.088, 0.090, 0.092, 0.094, 0.096],
+        'CFCs': [0.175, 0.180, 0.185, 0.190, 0.195],
+        'HCFCs': [0.008, 0.009, 0.010, 0.011, 0.012],
+        'HFCs': [0.001, 0.002, 0.003, 0.004, 0.005],
+    }
+    df = pd.DataFrame(data)
+    plot_manager = MatplotlibPlotManager(df)
+    plot_manager.plot_all_regressions('Year')

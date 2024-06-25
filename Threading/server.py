@@ -81,4 +81,5 @@ class Server:
 
 if __name__ == "__main__":
     server = Server('127.0.0.1', 65433, 'aggi_data.db')
-    server.start()
+    server_thread = threading.Thread(target=server.start)
+    server_thread.start()

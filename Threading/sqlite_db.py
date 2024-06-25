@@ -13,7 +13,7 @@ class SQLiteDB:
         # Sanitize column names to ensure they are valid SQL identifiers
         sanitized_columns = [self.sanitize_column_name(col) for col in columns if col.lower() != 'year']
         print(f"Sanitized Columns: {sanitized_columns}")
-        columns_def = ', '.join([f'{col} TEXT' for col in sanitized_columns])
+        columns_def = ', '.join([f'{col} REAL' for col in sanitized_columns])
         query = f'''
         CREATE TABLE IF NOT EXISTS {table_name} (
             Year TEXT, {columns_def}
