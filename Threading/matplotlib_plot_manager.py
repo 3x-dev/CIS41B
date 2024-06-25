@@ -59,4 +59,4 @@ class MatplotlibPlotManager:
     def plot_all_regressions(self, x_col: str):
         for y_col in self.data.columns:
             if y_col != x_col:
-                self.plot_regression(x_col, y_col, title=f'Linear Regression of {y_col} over {x_col}')
+                self.plot_regression(x_col, y_col, title=f'Linear Regression line of {y_col} over {x_col}')

@@ -97,4 +97,4 @@ if __name__ == "__main__":
 
     # Plotting results
     plot_manager = MatplotlibPlotManager(df)
-    plot_manager.plot_all_regressions('Year')
+    plot_manager.plot_all_regressions('Years')
